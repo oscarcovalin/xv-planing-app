@@ -156,8 +156,7 @@ input, select, textarea { font-family: inherit; }
 
 .splash-title {
   font-size: 2.4rem; font-weight: 800; text-align: center;
-  background: linear-gradient(135deg, var(--purple-light), var(--rose));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  color: var(--purple-dark);
   line-height: 1.15;
 }
 .splash-title span { font-weight: 300; font-style: italic; }
@@ -242,8 +241,7 @@ input, select, textarea { font-family: inherit; }
 }
 .register-title {
   font-size: 1.9rem; font-weight: 800; text-align: center;
-  background: linear-gradient(135deg, var(--purple-light), var(--rose));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  color: var(--purple-dark);
   margin-bottom: .4rem;
 }
 .register-subtitle {
@@ -331,8 +329,7 @@ input, select, textarea { font-family: inherit; }
 }
 .topbar-name {
   display: block; font-size: 1rem; font-weight: 700;
-  background: linear-gradient(90deg, var(--purple), var(--rose));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  color: var(--purple-dark);
 }
 .btn-settings {
   font-size: 1.4rem; padding: .4rem; border-radius: var(--radius-sm);
@@ -413,8 +410,7 @@ input, select, textarea { font-family: inherit; }
 }
 .section-title {
   font-size: 1.2rem; font-weight: 800;
-  background: linear-gradient(90deg, var(--purple-light), var(--rose));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  color: var(--purple-dark);
 }
 .xv-date-badge {
   font-size: .72rem; font-weight: 600; color: var(--gold);
@@ -446,8 +442,7 @@ input, select, textarea { font-family: inherit; }
 }
 .countdown-num {
   font-size: 5.5rem; font-weight: 900; line-height: 1;
-  background: linear-gradient(135deg, var(--purple-light), var(--rose));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  color: var(--purple-dark);
   position: relative; z-index: 1;
 }
 .countdown-label {
@@ -899,8 +894,7 @@ input, select, textarea { font-family: inherit; }
 }
 .mood-board-title {
   font-size: 1.1rem; font-weight: 700;
-  background: linear-gradient(135deg, var(--purple-light), var(--rose));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  color: var(--purple-dark);
   flex: 1;
 }
 .mood-chips {
