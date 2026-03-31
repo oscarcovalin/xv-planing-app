@@ -156,16 +156,7 @@ function getUserPhone() {
   } catch(_) { return null; }
 }
 
-function setupFloatingWA() {
-  const phone = getUserPhone();
-  const btn = document.getElementById('floatingWA');
-  if (phone && btn) {
-    const userName = state.settings.name || 'la quinceañera';
-    const msg = encodeURIComponent(`Hola, te contacto por los XV años de ${userName} 🌸`);
-    btn.href = `https://wa.me/52${phone}?text=${msg}`;
-    btn.classList.remove('hidden');
-  }
-}
+// The floating WA button has been deprecated.
 
 async function submitRegistration() {
   const name  = document.getElementById('regName').value.trim();
@@ -219,7 +210,6 @@ function launchApp() {
     setTimeout(() => openSettings(), 400);
   }
   refreshAll();
-  setupFloatingWA();
   // Recordatorios de pago al abrir la app
   setTimeout(() => requestAndNotify(), 1200);
 }
