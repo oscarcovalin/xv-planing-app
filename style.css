@@ -692,38 +692,35 @@ input, select, textarea { font-family: inherit; }
 }
 .payment-delete:hover { background: rgba(248,113,113,.18); color: var(--red); }
 
-/* ─── PENDING LIST ────────────────────────── */
-.pending-list { display: flex; flex-direction: column; gap: .65rem; }
-.pending-card {
+/* ─── CHECKLIST LIST ────────────────────────── */
+.checklist-list { display: flex; flex-direction: column; gap: .65rem; }
+.checklist-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-left: 4px solid var(--border);
+  border-left: 4px solid var(--purple-light);
   border-radius: var(--radius); padding: .9rem 1rem;
   transition: all var(--transition);
 }
-.pending-card.priority-high   { border-left-color: var(--red); }
-.pending-card.priority-medium { border-left-color: var(--gold); }
-.pending-card.priority-low    { border-left-color: var(--green); }
-.pending-card.done { opacity: .55; }
+.checklist-card.done { opacity: .7; border-left-color: var(--green); }
 
-.pending-top {
+.checklist-top {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: .5rem; gap: .5rem;
+  margin-bottom: .2rem; gap: .5rem;
 }
-.pending-check {
+.checklist-check {
   width: 22px; height: 22px; border-radius: 50%;
   border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center;
   font-size: .75rem; font-weight: 700; cursor: pointer; flex-shrink: 0;
   transition: all var(--transition);
   background: var(--bg3);
 }
-.pending-check:hover { border-color: var(--purple); background: rgba(167,139,250,.15); }
-.done .pending-check { background: var(--green-dark); border-color: var(--green); color: #fff; }
+.checklist-check:hover { border-color: var(--purple); background: rgba(167,139,250,.15); }
+.done .checklist-check { background: var(--green-dark); border-color: var(--green); color: #fff; }
 
-.pending-name { font-size: .92rem; font-weight: 700; flex: 1; }
-.done .pending-name { text-decoration: line-through; color: var(--text-muted); }
-.pending-actions { display: flex; align-items: center; gap: .4rem; flex-shrink: 0; }
+.checklist-name { font-size: .92rem; font-weight: 700; flex: 1; }
+.done .checklist-name { text-decoration: line-through; color: var(--text-muted); }
+.checklist-actions { display: flex; align-items: center; gap: .4rem; flex-shrink: 0; }
 
-.pending-info {
+.checklist-info {
   display: flex; flex-wrap: wrap; gap: .5rem;
   font-size: .72rem; color: var(--text-muted);
 }

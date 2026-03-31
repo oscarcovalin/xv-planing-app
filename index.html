@@ -131,9 +131,9 @@
         <span class="tab-icon">🤵</span>
         <span>Padrinos</span>
       </button>
-      <button class="tab-btn" data-tab="pending" onclick="switchTab('pending', this)">
-        <span class="tab-icon">📋</span>
-        <span>Pendientes</span>
+      <button class="tab-btn" data-tab="checklist" onclick="switchTab('checklist', this)">
+        <span class="tab-icon">✅</span>
+        <span>Checklist</span>
       </button>
       <button class="tab-btn" data-tab="moodboard" onclick="switchTab('moodboard', this)">
         <span class="tab-icon">🎨</span>
@@ -154,9 +154,17 @@
         <!-- DAYS COUNTDOWN -->
         <div class="countdown-card">
           <div class="countdown-date" id="countdownDate">Fecha por definir</div>
+          <div class="countdown-label" id="countdownLabelTop" style="font-size: 1.1rem; font-weight:700; margin-bottom:-5px; color:var(--purple-dark); letter-spacing:-0.5px;">¡Faltan!</div>
           <div class="countdown-num" id="countdownNum">--</div>
           <div class="countdown-label" id="countdownLabel">días para la gran fiesta</div>
-          <div class="countdown-name" id="countdownName">🌸</div>
+          
+          <div class="time-progress-wrap" style="margin-top:0.8rem; padding: 0 1rem;">
+            <div class="time-progress-bg" style="height: 12px; background: rgba(0,0,0,0.06); border-radius: 99px; overflow: hidden; position: relative;">
+               <div class="time-progress-fill" id="countdownProgressFill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--green), var(--purple)); border-radius: 99px; transition: width 1s ease;"></div>
+            </div>
+          </div>
+          
+          <div class="countdown-name" id="countdownName" style="margin-top:0.6rem;">🌸</div>
         </div>
 
         <!-- QUICK STATS -->
@@ -172,9 +180,9 @@
             <span class="stat-lbl">Contratados</span>
           </div>
           <div class="stat-card stat-gold">
-            <span class="stat-icon">⚠️</span>
-            <span class="stat-num" id="statPending">0</span>
-            <span class="stat-lbl">Por contratar</span>
+            <span class="stat-icon">📋</span>
+            <span class="stat-num" id="statChecklistTodo">0</span>
+            <span class="stat-lbl">Tareas</span>
           </div>
           <div class="stat-card stat-green">
             <span class="stat-icon">🔔</span>
@@ -242,18 +250,18 @@
         </div>
       </section>
 
-      <!-- ═══════════ PENDING TAB ═══════════ -->
-      <section id="tab-pending" class="tab-pane">
+      <!-- ═══════════ CHECKLIST TAB ═══════════ -->
+      <section id="tab-checklist" class="tab-pane">
         <div class="section-header">
-          <h2 class="section-title">Servicios Pendientes</h2>
-          <button class="btn-add" onclick="openPendingModal()">+ Agregar</button>
+          <h2 class="section-title">Checklist de Tareas</h2>
+          <button class="btn-add" onclick="openChecklistModal()">+ Tarea</button>
         </div>
 
-        <div id="pendingList" class="pending-list">
+        <div id="checklistCont" class="checklist-list">
           <div class="empty-state-big">
-            <div class="empty-icon">📋</div>
-            <p>Sin servicios pendientes por contratar</p>
-            <button class="btn-add" onclick="openPendingModal()">Agregar Servicio</button>
+            <div class="empty-icon">✅</div>
+            <p>¡Todo al día! No tienes tareas pendientes.</p>
+            <button class="btn-add" onclick="openChecklistModal()">Añadir Tarea</button>
           </div>
         </div>
       </section>
@@ -581,70 +589,27 @@
     </div>
   </div>
 
-  <!-- PENDING SERVICE MODAL -->
-  <div id="modalPending" class="modal-overlay" onclick="closeModal('modalPending')">
+  <!-- CHECKLIST MODAL -->
+  <div id="modalChecklist" class="modal-overlay" onclick="closeModal('modalChecklist')">
     <div class="modal-box" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <h3 class="modal-title">📋 Servicio Pendiente</h3>
-        <button class="modal-close" onclick="closeModal('modalPending')">✕</button>
+        <h3 class="modal-title">✅ Añadir Tarea</h3>
+        <button class="modal-close" onclick="closeModal('modalChecklist')">✕</button>
       </div>
       <div class="modal-body">
-        <input type="hidden" id="pendingId" />
+        <input type="hidden" id="checklistId" />
         <div class="form-group">
-          <label class="form-label">Servicio / Producto *</label>
-          <input type="text" id="pendingServiceName" class="form-input" placeholder="Ej: DJ para la recepción" />
+          <label class="form-label">Tarea / Concepto *</label>
+          <input type="text" id="checklistName" class="form-input" placeholder="Ej: Pagar enganche del salón" />
         </div>
         <div class="form-group">
-          <label class="form-label">Categoría</label>
-          <select id="pendingCategory" class="form-input">
-            <option value="">-- Seleccionar --</option>
-            <option value="Salón">🏛️ Salón / Venue</option>
-            <option value="Catering">🍽️ Catering / Banquetes</option>
-            <option value="Misa">⛪ Misa / Iglesia</option>
-            <option value="Música">🎵 Música / DJ / Banda</option>
-            <option value="Coreografías">💃 Coreografías</option>
-            <option value="Fotografía">📸 Fotografía</option>
-            <option value="Video">🎬 Videografía</option>
-            <option value="Decoración">🌸 Decoración</option>
-            <option value="Pastel">🎂 Pastel</option>
-            <option value="Flores">💐 Flores / Bouquet</option>
-            <option value="Vestido">👗 Vestido</option>
-            <option value="Maquillaje">💄 Maquillaje / Peinado</option>
-            <option value="Invitaciones">📬 Invitaciones</option>
-            <option value="Transporte">🚗 Transporte / Limousine</option>
-            <option value="Show">🎭 Show / Entretenimiento</option>
-            <option value="Recuerdos">🎁 Recuerdos / Souvenirs</option>
-            <option value="Vino">🍷 Vino</option>
-            <option value="Cocktelería">🍹 Cocktelería</option>
-            <option value="Mesa de Dulces">🍬 Mesa de Dulces</option>
-            <option value="Cabina Fotográfica">📷 Cabina Fotográfica</option>
-            <option value="Otro">✨ Otro</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Presupuesto estimado ($)</label>
-          <input type="number" id="pendingBudget" class="form-input" placeholder="0.00" min="0" step="0.01" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Prioridad</label>
-          <select id="pendingPriority" class="form-input">
-            <option value="high">🔴 Alta — Indispensable</option>
-            <option value="medium">🟡 Media — Importante</option>
-            <option value="low">🟢 Baja — Opcional</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Fecha límite para contratar</label>
-          <input type="date" id="pendingDeadline" class="form-input" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Notas / Requisitos</label>
-          <textarea id="pendingNotes" class="form-input form-textarea" placeholder="Detalles que necesitas en este servicio..."></textarea>
+          <label class="form-label">Fecha Límite</label>
+          <input type="date" id="checklistDeadline" class="form-input" />
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-cancel" onclick="closeModal('modalPending')">Cancelar</button>
-        <button class="btn-save" onclick="savePending()">Guardar</button>
+        <button class="btn-cancel" onclick="closeModal('modalChecklist')">Cancelar</button>
+        <button class="btn-save" onclick="saveChecklist()">Guardar Tarea</button>
       </div>
     </div>
   </div>

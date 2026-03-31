@@ -14,7 +14,7 @@ let state = {
   },
   providers: [],   // { id, name, category, phone, employee, total, deposit, nextPayDate, nextPayAmount, status, notes, payments:[] }
   payments: [],    // { id, providerId, providerName, amount, date, method, note, nextDate, nextAmount }
-  pending: [],     // { id, name, category, budget, priority, deadline, notes, done }
+  checklist: [],   // { id, name, deadline, done }
   padrinos: [],    // { id, name, category, phone, amount, paid, status, notes }
   moodboard: [],   // { id, category, title, desc, tags, image }
   boardTitle: 'Mi Tablero de Ideas'
@@ -356,7 +356,7 @@ function switchTab(tabName, btn) {
   if (tabName === 'providers') renderProviders();
   if (tabName === 'payments') renderPayments();
   if (tabName === 'padrinos') renderPadrinos();
-  if (tabName === 'pending') renderPending();
+  if (tabName === 'checklist') renderChecklist();
   if (tabName === 'moodboard') renderMoodboard();
 }
 
@@ -367,7 +367,7 @@ function refreshAll() {
   renderProviders();
   renderPayments();
   renderPadrinos();
-  renderPending();
+  renderChecklist();
   renderMoodboard();
 }
 
@@ -408,33 +408,53 @@ function renderDashboard() {
   // Date + countdown
   const dateStr = state.settings.date;
   const days = daysUntil(dateStr);
+  
+  const regData = localStorage.getItem('xvAnosReg_v1');
+  let startDate = new Date();
+  if (regData) {
+    try { const r = JSON.parse(regData); if(r.ts) startDate = new Date(r.ts); } catch(e){}
+  }
+
   if (dateStr) {
     document.getElementById('countdownDate').textContent = fmtDate(dateStr);
+    
+    const targetD = new Date(dateStr + 'T00:00:00');
+    const totalDays = Math.max(1, Math.round((targetD - startDate) / (1000 * 60 * 60 * 24)));
+    let pctTime = 0;
+
     if (days !== null && days === 0) {
       document.getElementById('countdownNum').textContent = '🎉';
       document.getElementById('countdownLabel').textContent = '¡Hoy es el gran día!';
+      pctTime = 100;
     } else if (days !== null && days < 0) {
       document.getElementById('countdownNum').textContent = '✨';
       document.getElementById('countdownLabel').textContent = '¡La fiesta ya pasó!';
+      pctTime = 100;
     } else {
       document.getElementById('countdownNum').textContent = days !== null ? days : '--';
       document.getElementById('countdownLabel').textContent = 'días para la gran fiesta';
+      const daysPassed = totalDays - days;
+      pctTime = Math.min(100, Math.max(0, (daysPassed / totalDays) * 100));
     }
+    const bar = document.getElementById('countdownProgressFill');
+    if(bar) bar.style.width = pctTime.toFixed(1) + '%';
   } else {
     document.getElementById('countdownDate').textContent = 'Fecha por definir';
     document.getElementById('countdownNum').textContent = '--';
     document.getElementById('countdownLabel').textContent = 'días para la gran fiesta';
+    const bar = document.getElementById('countdownProgressFill');
+    if(bar) bar.style.width = '0%';
   }
 
   // Stats
   const contracted = state.providers.filter(p => p.status === 'contracted').length;
-  const pendingCount = state.pending.filter(p => !p.done).length;
+  const pendingCount = (state.checklist || []).filter(p => !p.done).length;
   // Upcoming payment reminders
   const reminders = getAllReminders();
 
   document.getElementById('statProviders').textContent = state.providers.length;
   document.getElementById('statContracted').textContent = contracted;
-  document.getElementById('statPending').textContent = pendingCount;
+  document.getElementById('statChecklistTodo').textContent = pendingCount;
   document.getElementById('statReminders').textContent = reminders.length;
 
   // Upcoming reminders list
@@ -868,111 +888,109 @@ function renderPayments() {
   `).join('');
 }
 
-// ─── PENDING SERVICES ─────────────────────
-function openPendingModal(id = null) {
+// ─── CHECKLIST ────────────────────────────
+function openChecklistModal(id = null) {
   if (id) {
-    const s = state.pending.find(x => x.id === id);
+    const s = state.checklist.find(x => x.id === id);
     if (!s) return;
-    document.getElementById('pendingId').value = s.id;
-    document.getElementById('pendingServiceName').value = s.name || '';
-    document.getElementById('pendingCategory').value = s.category || '';
-    document.getElementById('pendingBudget').value = s.budget || '';
-    document.getElementById('pendingPriority').value = s.priority || 'medium';
-    document.getElementById('pendingDeadline').value = s.deadline || '';
-    document.getElementById('pendingNotes').value = s.notes || '';
+    document.getElementById('checklistId').value = s.id;
+    document.getElementById('checklistName').value = s.name || '';
+    document.getElementById('checklistDeadline').value = s.deadline || '';
   } else {
-    document.getElementById('pendingId').value = '';
-    document.getElementById('pendingServiceName').value = '';
-    document.getElementById('pendingCategory').value = '';
-    document.getElementById('pendingBudget').value = '';
-    document.getElementById('pendingPriority').value = 'high';
-    document.getElementById('pendingDeadline').value = '';
-    document.getElementById('pendingNotes').value = '';
+    document.getElementById('checklistId').value = '';
+    document.getElementById('checklistName').value = '';
+    document.getElementById('checklistDeadline').value = '';
   }
-  openModal('modalPending');
+  openModal('modalChecklist');
 }
 
-function savePending() {
-  const name = document.getElementById('pendingServiceName').value.trim();
-  if (!name) { showToast('⚠️ El nombre del servicio es obligatorio'); return; }
+function saveChecklist() {
+  const name = document.getElementById('checklistName').value.trim();
+  if (!name) { showToast('⚠️ El nombre de la tarea es obligatorio'); return; }
 
-  const id = document.getElementById('pendingId').value;
-  const data = {
-    name,
-    category: document.getElementById('pendingCategory').value,
-    budget: parseFloat(document.getElementById('pendingBudget').value) || 0,
-    priority: document.getElementById('pendingPriority').value,
-    deadline: document.getElementById('pendingDeadline').value,
-    notes: document.getElementById('pendingNotes').value.trim(),
-    done: false
-  };
+  const id = document.getElementById('checklistId').value;
+  const deadline = document.getElementById('checklistDeadline').value;
 
   if (id) {
-    const idx = state.pending.findIndex(p => p.id === id);
-    if (idx > -1) state.pending[idx] = { ...state.pending[idx], ...data, done: state.pending[idx].done };
+    const idx = state.checklist.findIndex(c => c.id === id);
+    if (idx > -1) {
+      state.checklist[idx].name = name;
+      state.checklist[idx].deadline = deadline;
+    }
   } else {
-    state.pending.push({ id: uid(), ...data });
+    state.checklist.push({ id: uid(), name, deadline, done: false });
   }
 
   saveState();
-  closeModal('modalPending');
-  renderPending();
+  closeModal('modalChecklist');
+  renderChecklist();
   renderDashboard();
-  showToast(id ? '✅ Servicio actualizado' : '✅ Servicio pendiente agregado');
+  showToast(id ? '✅ Tarea actualizada' : '✅ Tarea agregada al Checklist');
 }
 
-function togglePendingDone(id) {
-  const s = state.pending.find(x => x.id === id);
+function toggleChecklistDone(id) {
+  const s = state.checklist.find(x => x.id === id);
   if (s) {
     s.done = !s.done;
     saveState();
-    renderPending();
+    renderChecklist();
     renderDashboard();
-    showToast(s.done ? '✅ Marcado como contratado' : '↩️ Marcado como pendiente');
+    showToast(s.done ? '✅ Tarea completada' : '↩️ Tarea reactivada');
   }
 }
 
-function renderPending() {
-  const box = document.getElementById('pendingList');
-  const active = state.pending.filter(p => !p.done);
-  const done   = state.pending.filter(p => p.done);
-  const all = [...active.sort((a,b) => {
-    const order = { high:0, medium:1, low:2 };
-    return (order[a.priority]||1) - (order[b.priority]||1);
-  }), ...done];
+function buildChecklistWA(taskName, taskDate) {
+  const userPhone = getUserPhone();
+  const userName = state.settings.name || 'Festejada';
+  if (!userPhone) return '#';
+  let dateText = '';
+  if (taskDate) {
+    dateText = ` para el ${fmtDate(taskDate)}`;
+  }
+  const msg = encodeURIComponent(`Hola ${userName} 💕 recuerda que${dateText} tienes pendiente: ${taskName}`);
+  return `https://wa.me/52${userPhone}?text=${msg}`;
+}
 
-  if (all.length === 0) {
+function renderChecklist() {
+  const box = document.getElementById('checklistCont');
+  if (!state.checklist || state.checklist.length === 0) {
     box.innerHTML = `
       <div class="empty-state-big">
-        <div class="empty-icon">📋</div>
-        <p>Sin servicios pendientes por contratar</p>
-        <button class="btn-add" onclick="openPendingModal()">Agregar Servicio</button>
+        <div class="empty-icon">✅</div>
+        <p>¡Todo al día! No tienes tareas registradas.</p>
+        <button class="btn-add" onclick="openChecklistModal()">Añadir Tarea</button>
       </div>`;
     return;
   }
 
+  const active = state.checklist.filter(p => !p.done).sort((a,b) => (a.deadline||'9999').localeCompare(b.deadline||'9999'));
+  const done   = state.checklist.filter(p => p.done);
+  const all = [...active, ...done];
+
   box.innerHTML = all.map(s => {
     const days = daysUntil(s.deadline);
-    const prioLabels = { high:'Alta', medium:'Media', low:'Baja' };
+    const waLink = buildChecklistWA(s.name, s.deadline);
+    
     return `
-      <div class="pending-card priority-${s.priority}${s.done ? ' done' : ''}">
-        <div class="pending-top">
-          <div style="display:flex;align-items:center;gap:0.5rem;flex:1">
-            <div class="pending-check" onclick="togglePendingDone('${s.id}')" title="${s.done ? 'Desmarcar':'Marcar contratado'}">${s.done ? '✓' : ''}</div>
-            <div class="pending-name">${categoryIcon(s.category)} ${s.name}</div>
+      <div class="checklist-card ${s.done ? ' done' : ''}">
+        <div class="checklist-top" style="display:flex; align-items:flex-start; justify-content:space-between; width:100%;">
+          
+          <div style="display:flex; align-items:center; gap:0.6rem; flex:1;">
+            <div class="checklist-check ${s.done ? 'checked' : ''}" onclick="toggleChecklistDone('${s.id}')">
+              ${s.done ? '✓' : ''}
+            </div>
+            <div>
+              <div class="checklist-name" style="font-weight:600; font-size:1rem; ${s.done ? 'text-decoration:line-through; opacity:0.6;' : 'color:var(--text);'}">${s.name}</div>
+              ${s.deadline ? `<div style="font-size:0.8rem; margin-top:0.2rem; color:var(--text-muted);">📅 Vence: ${fmtDate(s.deadline)}${!s.done && days !== null ? ' (' + daysLabel(days) + ')' : ''}</div>` : ''}
+            </div>
           </div>
-          <div class="pending-actions">
-            <span class="priority-badge ${s.priority}">${prioLabels[s.priority]||s.priority}</span>
-            <button class="btn-icon" onclick="openPendingModal('${s.id}')" title="Editar">✏️</button>
-            <button class="btn-icon danger" onclick="confirmDelete('pending','${s.id}')" title="Eliminar">🗑️</button>
+          
+          <div class="checklist-actions" style="display:flex; align-items:center; gap:0.4rem;">
+            ${!s.done ? `<a href="${waLink}" target="_blank" class="btn-icon" style="background:#25D366; color:#fff; font-size:0.8rem; padding:0.3rem 0.6rem; border-radius:12px; text-decoration:none;" title="Enviar recordatorio a WhatsApp">📱 Avisar</a>` : ''}
+            <button class="btn-icon" onclick="openChecklistModal('${s.id}')" title="Editar">✏️</button>
+            <button class="btn-icon danger" onclick="confirmDelete('checklist','${s.id}')" title="Eliminar">🗑️</button>
           </div>
         </div>
-        <div class="pending-info">
-          ${s.budget > 0 ? `<span>💰 ${fmt(s.budget)}</span>` : ''}
-          ${s.deadline ? `<span>📅 Límite: ${fmtDate(s.deadline)}${days !== null ? ' (' + daysLabel(days) + ')' : ''}</span>` : ''}
-          ${s.category ? `<span>${categoryIcon(s.category)} ${s.category}</span>` : ''}
-        </div>
-        ${s.notes ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;line-height:1.4">${s.notes}</div>` : ''}
       </div>
     `;
   }).join('');
@@ -988,7 +1006,7 @@ function confirmDelete(type, id) {
   const msgs = {
     provider: '¿Eliminar este proveedor? También se eliminarán sus pagos asociados.',
     payment:  '¿Eliminar este registro de pago?',
-    pending:  '¿Eliminar este servicio pendiente?',
+    checklist: '¿Eliminar esta tarea del checklist?',
     padrino:  '¿Eliminar este padrino/madrina?'
   };
   document.getElementById('confirmMsg').textContent = msgs[type] || '¿Eliminar este elemento?';
@@ -1002,8 +1020,8 @@ function executeDelete() {
     state.payments = state.payments.filter(p => p.providerId !== _deleteId);
   } else if (_deleteType === 'payment') {
     state.payments = state.payments.filter(p => p.id !== _deleteId);
-  } else if (_deleteType === 'pending') {
-    state.pending = state.pending.filter(p => p.id !== _deleteId);
+  } else if (_deleteType === 'checklist') {
+    state.checklist = state.checklist.filter(p => p.id !== _deleteId);
   } else if (_deleteType === 'padrino') {
     state.padrinos = state.padrinos.filter(p => p.id !== _deleteId);
   }
