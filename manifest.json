@@ -1,0 +1,25 @@
+{
+  "name": "Mis XV Planner",
+  "short_name": "XV Planner",
+  "description": "Organiza la fiesta de XV años perfecta con Mis XV Planner: presupuestos, proveedores, ideas y recordatorios.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "./logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "orientation": "portrait",
+  "lang": "es-MX"
+}
