@@ -340,7 +340,7 @@ input, select, textarea { font-family: inherit; }
 /* ─── BUDGET BANNER ───────────────────────── */
 .budget-banner {
   display: flex; align-items: center; justify-content: space-around;
-  padding: .8rem 1rem;
+  padding: .5rem .6rem;
   background: linear-gradient(135deg, var(--bg2), var(--bg3));
   border-bottom: 1px solid var(--border);
 }
@@ -354,7 +354,7 @@ input, select, textarea { font-family: inherit; }
 /* ─── PROGRESS BAR ────────────────────────── */
 .progress-wrap {
   display: flex; align-items: center; gap: .65rem;
-  padding: .5rem 1.2rem;
+  padding: .35rem 1rem;
   background: var(--bg2);
 }
 .progress-bar-bg {
@@ -374,13 +374,19 @@ input, select, textarea { font-family: inherit; }
   display: flex; background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: sticky; top: 62px; z-index: 99;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
 }
+.tab-nav::-webkit-scrollbar { display: none; } /* Safari/Chrome */
+
 .tab-btn {
   flex: 1; display: flex; flex-direction: column; align-items: center; gap: .2rem;
-  padding: .6rem .2rem; font-size: .6rem; font-weight: 600;
+  padding: .5rem .2rem; font-size: .55rem; font-weight: 600;
   color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em;
   transition: color var(--transition), background var(--transition);
   position: relative;
+  min-width: 68px;
 }
 .tab-btn .tab-icon { font-size: 1.2rem; }
 .tab-btn::after {
