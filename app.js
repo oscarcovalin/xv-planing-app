@@ -326,23 +326,34 @@ function playCoinSound() {
 
 // ─── INIT ──────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  // Play coin sound on first interaction or immediately
-  const trySound = () => { playCoinSound(); document.removeEventListener('click', trySound); };
-  try {
-    playCoinSound();
-  } catch(_) {
-    document.addEventListener('click', trySound, { once: true });
-  }
+  const tapScreen = document.getElementById('tapToStart');
+  const btnStart = document.getElementById('btnStartApp');
+  
+  if (btnStart) {
+    btnStart.addEventListener('click', () => {
+      // 1. Ocultar el tap screen
+      if (tapScreen) {
+        tapScreen.style.opacity = '0';
+        setTimeout(() => tapScreen.remove(), 500);
+      }
 
-  // Splash siempre primero
-  setTimeout(() => {
-    document.getElementById('splash').classList.add('hidden');
-    if (isRegistered()) {
-      launchApp();
-    } else {
-      document.getElementById('registerScreen').classList.remove('hidden');
-    }
-  }, 4500);
+      // 2. Play sound and trigger animations
+      document.body.classList.add('app-running');
+      try { playCoinSound(); } catch(_) {}
+
+      // 3. Destruir splash después de la animación de 4.5s
+      setTimeout(() => {
+        const splash = document.getElementById('splash');
+        if (splash) splash.classList.add('hidden');
+        
+        if (isRegistered()) {
+          launchApp();
+        } else {
+          document.getElementById('registerScreen').classList.remove('hidden');
+        }
+      }, 4500);
+    });
+  }
 });
 
 
