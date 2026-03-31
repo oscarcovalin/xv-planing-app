@@ -133,7 +133,7 @@ input, select, textarea { font-family: inherit; }
   opacity: 0;
 }
 .app-running .splash-logo {
-  animation: logoFadeIn 1s ease forwards, logoCoinSpin 3s cubic-bezier(.4,0,.2,1) 0.5s forwards;
+  animation: logoFadeIn 0.5s ease forwards, logoCoinSpin 1.5s cubic-bezier(.4,0,.2,1) 0.2s forwards;
   opacity: 0;
   position: relative;
 }
@@ -156,7 +156,7 @@ input, select, textarea { font-family: inherit; }
   z-index: 10;
 }
 .app-running .splash-content::before {
-  animation: logoGleam .7s ease 3.5s forwards;
+  animation: logoGleam .5s ease 1.7s forwards;
 }
 
 .splash-title {
@@ -179,7 +179,7 @@ input, select, textarea { font-family: inherit; }
   border-radius: 99px;
 }
 .app-running .loader-bar {
-  animation: loadBar 4s ease forwards;
+  animation: loadBar 2.2s ease forwards;
 }
 
 @keyframes loadBar {

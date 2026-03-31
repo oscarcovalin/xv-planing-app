@@ -1,4 +1,4 @@
-const CACHE_NAME = 'xv-planner-v3';
+const CACHE_NAME = 'xv-planner-v4';
 const ASSETS = [
   './',
   './index.html',

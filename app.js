@@ -37,6 +37,12 @@ function loadState() {
     if (saved) {
       const parsed = JSON.parse(saved);
       state = { ...state, ...parsed };
+      state.providers = state.providers || [];
+      state.payments = state.payments || [];
+      state.checklist = state.checklist || [];
+      state.padrinos = state.padrinos || [];
+      state.moodboard = state.moodboard || [];
+      state.settings = state.settings || { name: '', date: '', budget: 0 };
     }
   } catch (e) {
     console.warn('Load error', e);
@@ -206,7 +212,7 @@ function launchApp() {
   loadState();
   initTheme();
   
-  if (!state.settings.name) {
+  if (!state.settings || !state.settings.name) {
     setTimeout(() => openSettings(), 400);
   }
   refreshAll();
@@ -269,8 +275,8 @@ function playCoinSound() {
     const ticks = 18;
     for (let i = 0; i < ticks; i++) {
       // Interval increases as coin slows: starts fast, ends slow
-      const t = now + 0.5 + (i * (0.06 + i * 0.012));
-      if (t - now > 3.5) break; // Don't exceed animation duration
+      const t = now + 0.2 + (i * (0.03 + i * 0.006));
+      if (t - now > 1.7) break; // Don't exceed animation duration
 
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -291,8 +297,8 @@ function playCoinSound() {
       osc.stop(t + 0.07);
     }
 
-    // Final bright "ding" when coin lands (at 3.5s = when gleam fires)
-    const dingTime = now + 3.5;
+    // Final bright "ding" when coin lands (at 1.7s = when gleam fires)
+    const dingTime = now + 1.7;
     const dingOsc = ctx.createOscillator();
     const dingOsc2 = ctx.createOscillator();
     const dingGain = ctx.createGain();
@@ -341,7 +347,7 @@ window.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('app-running');
       try { playCoinSound(); } catch(_) {}
 
-      // 3. Destruir splash después de la animación de 4.5s
+      // 3. Destruir splash después de la animación (2.5s)
       setTimeout(() => {
         const splash = document.getElementById('splash');
         if (splash) splash.classList.add('hidden');
@@ -351,7 +357,7 @@ window.addEventListener('DOMContentLoaded', () => {
         } else {
           document.getElementById('registerScreen').classList.remove('hidden');
         }
-      }, 4500);
+      }, 2500);
     });
   }
 });

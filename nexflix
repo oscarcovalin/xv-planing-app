@@ -1,0 +1,68 @@
+export default function EventFlixHome() {
+const events = [
+{
+title: "XV Sofía",
+image: "https://via.placeholder.com/400x220",
+},
+{
+title: "Boda Karina & Héctor",
+image: "https://via.placeholder.com/400x220",
+},
+{
+title: "XV Valeria",
+image: "https://via.placeholder.com/400x220",
+},
+];
+
+return (
+<div className="min-h-screen bg-black text-white">
+  {/* Header */}
+  <header className="flex items-center justify-between px-8 py-4">
+    <h1 className="text-2xl font-bold tracking-wide">
+      EventFlix
+    </h1>
+    <button className="bg-white text-black px-4 py-2 rounded-lg">
+      Iniciar sesión
+    </button>
+  </header>
+
+  {/* Hero */}
+  <section className="h-[70vh] bg-cover bg-center flex flex-col justify-center px-10" style={{
+    backgroundImage: "url('https://via.placeholder.com/1200x700')" , }}>
+    <h2 className="text-5xl font-bold mb-4">
+      XV Sofía
+    </h2>
+    <p className="text-lg max-w-xl mb-6">
+      Revive los mejores momentos de una noche inolvidable.
+    </p>
+    <div className="flex gap-4">
+      <button className="bg-white text-black px-6 py-3 rounded-lg font-semibold">
+        ▶ Reproducir
+      </button>
+      <button className="bg-gray-700 px-6 py-3 rounded-lg">
+        Más información
+      </button>
+    </div>
+  </section>
+
+  {/* Carrusel */}
+  <section className="px-8 py-8">
+    <h3 className="text-2xl font-semibold mb-4">
+      Eventos recientes
+    </h3>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {events.map((event, index) => (
+      <div key={index} className="bg-zinc-900 rounded-xl overflow-hidden hover:scale-105 transition">
+        <img src={event.image} alt={event.title} className="w-full h-52 object-cover" />
+        <div className="p-4">
+          <h4 className="text-lg font-medium">
+            {event.title}
+          </h4>
+        </div>
+      </div>
+      ))}
+    </div>
+  </section>
+</div>
+);
+}
