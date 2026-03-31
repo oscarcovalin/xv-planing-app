@@ -54,6 +54,44 @@
   --font:          'Montserrat', system-ui, sans-serif;
 }
 
+[data-theme="dark"] {
+  --bg:            #1a1e29;
+  --bg2:           #182421;
+  --bg3:           #241b2e;
+  --surface:       #1f2937;
+  --surface2:      #332529;
+  --border:        #374151;
+  --border2:       rgba(255,255,255,0.1);
+
+  --purple-light:  #463568;
+  --rose-light:    #5e2a40;
+  --gold-light:    #634f1e;
+  --green-light:   #1a4538;
+  --blue-light:    #1c3252;
+
+  --text:          #f9fafb;
+  --text-muted:    #9ca3af;
+  --text-soft:     #d1d5db;
+
+  --shadow:        0 4px 24px rgba(0,0,0,.5);
+  --shadow-sm:     0 2px 10px rgba(0,0,0,.3);
+}
+
+[data-theme="dark"] body {
+  background-color: #111827;
+}
+
+[data-theme="dark"] .glass-panel,
+[data-theme="dark"] .modal-box,
+[data-theme="dark"] .provider-card,
+[data-theme="dark"] .mood-card,
+[data-theme="dark"] .topbar {
+  background: rgba(31, 41, 55, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 /* ─── RESET ───────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -987,4 +1025,90 @@ input, select, textarea { font-family: inherit; }
 @keyframes waPulse {
   0%, 100% { box-shadow: 0 4px 16px rgba(37,211,102,.4); }
   50%      { box-shadow: 0 4px 24px rgba(37,211,102,.6), 0 0 0 8px rgba(37,211,102,.1); }
+}
+
+/* ─── PRINT / PDF EXPORT STYLES ───────────── */
+@media print {
+  /* Ocultar elementos UI interactivos */
+  .bottom-nav,
+  .topbar button,
+  .btn-add,
+  .btn-float-wa,
+  .print-hide,
+  .floating-wa,
+  .modal-overlay,
+  .provider-card-actions,
+  .mood-card-actions,
+  .payment-history-list .btn-icon,
+  .stats-grid .stat-card small {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .app {
+    padding-bottom: 0 !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .topbar {
+    background: #fff !important;
+    border-bottom: 2px solid #000 !important;
+    position: static;
+    color: #000 !important;
+    height: auto !important;
+    padding: 1rem !important;
+  }
+  .topbar-title, .topbar-name {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important;
+  }
+
+  .budget-banner {
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    margin-top: 1rem !important;
+  }
+  .budget-label { color: #555 !important; }
+
+  /* Muestra todas las pestañas juntas para un reporte completo */
+  .tab-pane {
+    display: block !important;
+    page-break-inside: avoid;
+    margin-bottom: 2rem;
+  }
+  .tab-pane:nth-child(n+3) {
+    page-break-before: always;
+  }
+
+  /* Evitar quiebres feos en elementos visuales */
+  .provider-card, .padrino-card {
+    page-break-inside: avoid;
+    border: 1px solid #ccc !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    color: #000 !important;
+  }
+  .payment-history-item {
+    page-break-inside: avoid;
+  }
+  
+  .moodboard-grid {
+    column-count: 3 !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }

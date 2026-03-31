@@ -73,7 +73,11 @@
           <span class="topbar-name" id="eventNameDisplay">Mi Fiesta</span>
         </div>
       </div>
-      <button class="btn-settings" onclick="openSettings()" aria-label="Ajustes">⚙️</button>
+      </div>
+      <div style="display:flex; gap:0.5rem; align-items:center;">
+        <button class="btn-settings" onclick="toggleTheme()" id="btnThemeToggle" aria-label="Cambiar Tema">🌙</button>
+        <button class="btn-settings" onclick="openSettings()" aria-label="Ajustes">⚙️</button>
+      </div>
     </header>
 
     <!-- BUDGET SUMMARY BAR -->
@@ -135,8 +139,9 @@
 
       <!-- ═══════════ DASHBOARD TAB ═══════════ -->
       <section id="tab-dashboard" class="tab-pane active">
-        <div class="section-header">
+        <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
           <h2 class="section-title">Panel de Control</h2>
+          <button class="btn-cancel print-hide" onclick="window.print()" style="padding: 0.35rem 0.75rem; margin:0;">🖨️ PDF</button>
         </div>
 
         <!-- DAYS COUNTDOWN -->
@@ -742,6 +747,9 @@
   <!-- TOAST NOTIFICATION -->
   <div id="toast" class="toast"></div>
 
+  <!-- LIBRERÍA DE CONFETI (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
   <script src="app.js"></script>
 </body>
 </html>

@@ -43,6 +43,22 @@ function loadState() {
   }
 }
 
+// ─── THEME CONFIGURATION ──────────────────
+function initTheme() {
+  const t = localStorage.getItem('xvTheme_v1') || 'light';
+  document.documentElement.setAttribute('data-theme', t);
+  const btn = document.getElementById('btnThemeToggle');
+  if (btn) btn.textContent = t === 'dark' ? '☀️' : '🌙';
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('xvTheme_v1', next);
+  document.getElementById('btnThemeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
+}
+
 // ─── UTILITIES ────────────────────────────
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -197,6 +213,8 @@ function launchApp() {
   document.getElementById('registerScreen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
   loadState();
+  initTheme();
+  
   if (!state.settings.name) {
     setTimeout(() => openSettings(), 400);
   }
@@ -370,9 +388,20 @@ function updateBudgetBanner() {
   const totalContracts = state.providers.reduce((s, p) => s + (parseFloat(p.total)||0), 0);
   const totalPending = totalContracts - totalPaid;
 
+  const pendingAmount = Math.max(0, totalPending);
   document.getElementById('totalBudget').textContent = fmt(totalBudget || totalContracts);
   document.getElementById('totalPaid').textContent = fmt(totalPaid);
-  document.getElementById('totalPending').textContent = fmt(Math.max(0, totalPending));
+  document.getElementById('totalPending').textContent = fmt(pendingAmount);
+
+  // Lógica de Confeti
+  if (totalContracts > 0 && pendingAmount <= 0 && !window.confettiFired) {
+    window.confettiFired = true;
+    if (typeof confetti === 'function') {
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    }
+  } else if (pendingAmount > 0) {
+    window.confettiFired = false;
+  }
 
   const pct = totalContracts > 0 ? Math.min(100, (totalPaid / totalContracts) * 100) : 0;
   document.getElementById('progressFill').style.width = pct.toFixed(1) + '%';
