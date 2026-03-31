@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mis XV Planner ✨</title>
+  <meta name="description" content="Organiza la fiesta de XV años perfecta con Mis XV Planner: proveedores, pagos, recordatorios y presupuesto en un solo lugar." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash" class="splash">
+    <div class="splash-content">
+      <img src="logo.png" alt="Miss Quince" class="splash-logo" />
+      <h1 class="splash-title">Mis XV<br/><span>Planner</span></h1>
+      <p class="splash-sub">Tu fiesta perfecta, perfectamente organizada</p>
+      <div class="splash-loader">
+        <div class="loader-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTRO INICIAL -->
+  <div id="registerScreen" class="register-screen hidden">
+    <div class="register-bg-deco">
+      <div class="reg-circle reg-circle-1"></div>
+      <div class="reg-circle reg-circle-2"></div>
+      <div class="reg-circle reg-circle-3"></div>
+    </div>
+    <div class="register-card">
+      <img src="logo.png" alt="Miss Quince" class="register-logo" />
+      <h1 class="register-title">¡Bienvenida!</h1>
+      <p class="register-subtitle">Planifica la fiesta de XV años perfecta.<br/>Regístrate para comenzar.</p>
+
+      <div class="reg-form-group">
+        <label class="reg-label">Tu nombre</label>
+        <div class="reg-input-wrap">
+          <span class="reg-input-icon">👤</span>
+          <input id="regName" type="text" class="reg-input" placeholder="Ej: María González" autocomplete="name" />
+        </div>
+      </div>
+
+      <div class="reg-form-group">
+        <label class="reg-label">WhatsApp (con lada)</label>
+        <div class="reg-input-wrap">
+          <span class="reg-input-icon">📱</span>
+          <input id="regPhone" type="tel" class="reg-input" placeholder="Ej: 5512345678" autocomplete="tel" inputmode="numeric" />
+        </div>
+      </div>
+
+      <button id="btnComenzar" class="btn-comenzar" onclick="submitRegistration()">
+        <span id="btnComenzarText">✨ Comenzar</span>
+        <span id="btnComenzarLoader" class="hidden">⏳ Enviando...</span>
+      </button>
+
+      <p class="reg-privacy">🔒 Tus datos están seguros y no serán compartidos con terceros.</p>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" class="app hidden">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <img src="logo.png" alt="Miss Quince" class="topbar-logo" />
+        <div>
+          <span class="topbar-title">Mis XV Planner</span>
+          <span class="topbar-name" id="eventNameDisplay">Mi Fiesta</span>
+        </div>
+      </div>
+      <button class="btn-settings" onclick="openSettings()" aria-label="Ajustes">⚙️</button>
+    </header>
+
+    <!-- BUDGET SUMMARY BAR -->
+    <div class="budget-banner">
+      <div class="budget-item">
+        <span class="budget-label">Presupuesto Total</span>
+        <span class="budget-value" id="totalBudget">$0</span>
+      </div>
+      <div class="budget-divider"></div>
+      <div class="budget-item">
+        <span class="budget-label">Pagado</span>
+        <span class="budget-value paid" id="totalPaid">$0</span>
+      </div>
+      <div class="budget-divider"></div>
+      <div class="budget-item">
+        <span class="budget-label">Pendiente</span>
+        <span class="budget-value pending" id="totalPending">$0</span>
+      </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-wrap">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+
+    <!-- NAV TABS -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="dashboard" onclick="switchTab('dashboard', this)">
+        <span class="tab-icon">🏠</span>
+        <span>Inicio</span>
+      </button>
+      <button class="tab-btn" data-tab="providers" onclick="switchTab('providers', this)">
+        <span class="tab-icon">🎪</span>
+        <span>Proveedores</span>
+      </button>
+      <button class="tab-btn" data-tab="payments" onclick="switchTab('payments', this)">
+        <span class="tab-icon">💳</span>
+        <span>Pagos</span>
+      </button>
+      <button class="tab-btn" data-tab="padrinos" onclick="switchTab('padrinos', this)">
+        <span class="tab-icon">🤵</span>
+        <span>Padrinos</span>
+      </button>
+      <button class="tab-btn" data-tab="pending" onclick="switchTab('pending', this)">
+        <span class="tab-icon">📋</span>
+        <span>Pendientes</span>
+      </button>
+      <button class="tab-btn" data-tab="moodboard" onclick="switchTab('moodboard', this)">
+        <span class="tab-icon">🎨</span>
+        <span>Moodboard</span>
+      </button>
+    </nav>
+
+    <!-- TAB CONTENT AREA -->
+    <main class="tab-content">
+
+      <!-- ═══════════ DASHBOARD TAB ═══════════ -->
+      <section id="tab-dashboard" class="tab-pane active">
+        <div class="section-header">
+          <h2 class="section-title">Panel de Control</h2>
+        </div>
+
+        <!-- DAYS COUNTDOWN -->
+        <div class="countdown-card">
+          <div class="countdown-date" id="countdownDate">Fecha por definir</div>
+          <div class="countdown-num" id="countdownNum">--</div>
+          <div class="countdown-label" id="countdownLabel">días para la gran fiesta</div>
+          <div class="countdown-name" id="countdownName">🌸</div>
+        </div>
+
+        <!-- QUICK STATS -->
+        <div class="stats-grid">
+          <div class="stat-card stat-purple">
+            <span class="stat-icon">🎪</span>
+            <span class="stat-num" id="statProviders">0</span>
+            <span class="stat-lbl">Proveedores</span>
+          </div>
+          <div class="stat-card stat-rose">
+            <span class="stat-icon">✅</span>
+            <span class="stat-num" id="statContracted">0</span>
+            <span class="stat-lbl">Contratados</span>
+          </div>
+          <div class="stat-card stat-gold">
+            <span class="stat-icon">⚠️</span>
+            <span class="stat-num" id="statPending">0</span>
+            <span class="stat-lbl">Por contratar</span>
+          </div>
+          <div class="stat-card stat-green">
+            <span class="stat-icon">🔔</span>
+            <span class="stat-num" id="statReminders">0</span>
+            <span class="stat-lbl">Recordatorios</span>
+          </div>
+        </div>
+
+        <!-- UPCOMING REMINDERS -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🔔 Próximos Pagos</h3>
+          </div>
+          <div id="upcomingReminders" class="reminder-list">
+            <div class="empty-state">Sin recordatorios próximos</div>
+          </div>
+        </div>
+
+        <!-- CATEGORY BREAKDOWN -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📊 Por Categoría</h3>
+          </div>
+          <div id="categoryBreakdown" class="category-list">
+            <div class="empty-state">Agrega proveedores para ver el detalle</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ PROVIDERS TAB ═══════════ -->
+      <section id="tab-providers" class="tab-pane">
+        <div class="section-header">
+          <h2 class="section-title">Proveedores</h2>
+          <button class="btn-add" onclick="openProviderModal()">+ Agregar</button>
+        </div>
+
+        <!-- FILTER CHIPS -->
+        <div class="filter-chips">
+          <button class="chip active" onclick="filterProviders('all', this)">Todos</button>
+          <button class="chip" onclick="filterProviders('contracted', this)">Contratados</button>
+          <button class="chip" onclick="filterProviders('pending', this)">Pendientes</button>
+        </div>
+
+        <div id="providersList" class="providers-list">
+          <div class="empty-state-big">
+            <div class="empty-icon">🎪</div>
+            <p>Aún no hay proveedores registrados</p>
+            <button class="btn-add" onclick="openProviderModal()">Agregar Proveedor</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ PAYMENTS TAB ═══════════ -->
+      <section id="tab-payments" class="tab-pane">
+        <div class="section-header">
+          <h2 class="section-title">Registro de Pagos</h2>
+          <button class="btn-add" onclick="openPaymentModal()">+ Pago</button>
+        </div>
+
+        <div id="paymentsList" class="payments-list">
+          <div class="empty-state-big">
+            <div class="empty-icon">💳</div>
+            <p>Sin pagos registrados aún</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ PENDING TAB ═══════════ -->
+      <section id="tab-pending" class="tab-pane">
+        <div class="section-header">
+          <h2 class="section-title">Servicios Pendientes</h2>
+          <button class="btn-add" onclick="openPendingModal()">+ Agregar</button>
+        </div>
+
+        <div id="pendingList" class="pending-list">
+          <div class="empty-state-big">
+            <div class="empty-icon">📋</div>
+            <p>Sin servicios pendientes por contratar</p>
+            <button class="btn-add" onclick="openPendingModal()">Agregar Servicio</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ PADRINOS TAB ═══════════ -->
+      <section id="tab-padrinos" class="tab-pane">
+        <div class="section-header">
+          <h2 class="section-title">Padrinos</h2>
+          <button class="btn-add" onclick="openPadrinoModal()">+ Agregar</button>
+        </div>
+
+        <!-- FILTER CHIPS -->
+        <div class="filter-chips">
+          <button class="chip active" onclick="filterPadrinos('all', this)">Todos</button>
+          <button class="chip" onclick="filterPadrinos('confirmed', this)">Confirmados</button>
+          <button class="chip" onclick="filterPadrinos('pending', this)">Pendientes</button>
+        </div>
+
+        <div id="padrinosList" class="providers-list">
+          <div class="empty-state-big">
+            <div class="empty-icon">🤵</div>
+            <p>Aún no hay padrinos registrados</p>
+            <button class="btn-add" onclick="openPadrinoModal()">Agregar Padrino</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ MOODBOARD TAB ═══════════ -->
+      <section id="tab-moodboard" class="tab-pane">
+        <div class="section-header">
+          <h2 class="section-title">Moodboard</h2>
+          <button class="btn-add" onclick="openMoodIdeaModal()">+ Idea</button>
+        </div>
+
+        <!-- BOARD TITLE -->
+        <div class="mood-board-header">
+          <div class="mood-board-title" id="moodBoardTitle">Mi Tablero de Ideas</div>
+          <button class="btn-icon" onclick="editBoardTitle()" title="Editar título">✏️</button>
+        </div>
+
+        <!-- CATEGORY CHIPS -->
+        <div class="filter-chips mood-chips">
+          <button class="chip active" onclick="filterMoodboard('all', this)">Todas</button>
+          <button class="chip" onclick="filterMoodboard('Vestido', this)">👗</button>
+          <button class="chip" onclick="filterMoodboard('Peinado', this)">💇</button>
+          <button class="chip" onclick="filterMoodboard('Maquillaje', this)">💄</button>
+          <button class="chip" onclick="filterMoodboard('Decoración', this)">🌸</button>
+          <button class="chip" onclick="filterMoodboard('Pastel', this)">🎂</button>
+          <button class="chip" onclick="filterMoodboard('Foto', this)">📸</button>
+          <button class="chip" onclick="filterMoodboard('Color', this)">🎨</button>
+          <button class="chip" onclick="filterMoodboard('Vals', this)">💃</button>
+          <button class="chip" onclick="filterMoodboard('Otro', this)">✨</button>
+        </div>
+
+        <div id="moodboardGrid" class="moodboard-grid">
+          <div class="empty-state-big">
+            <div class="empty-icon">🎨</div>
+            <p>Aún no hay ideas en tu moodboard</p>
+            <button class="btn-add" onclick="openMoodIdeaModal()">Agregar primera idea</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!--              MODALS                     -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- PADRINO MODAL -->
+  <div id="modalPadrino" class="modal-overlay" onclick="closeModal('modalPadrino')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title" id="padrinoModalTitle">🤵 Nuevo Padrino</h3>
+        <button class="modal-close" onclick="closeModal('modalPadrino')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="padrinoId" />
+        <div class="form-group">
+          <label class="form-label">Nombre del padrino/madrina *</label>
+          <input type="text" id="padrinoName" class="form-input" placeholder="Ej: Don Carlos y Doña María" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">¿Qué apadrina? *</label>
+          <select id="padrinoCategory" class="form-input">
+            <option value="">-- Seleccionar --</option>
+            <option value="Vestido">👗 Vestido</option>
+            <option value="Pastel">🎂 Pastel</option>
+            <option value="Salón">🏛️ Salón / Venue</option>
+            <option value="Decoración">🌸 Decoración</option>
+            <option value="Música">🎵 Música / DJ</option>
+            <option value="Coreografías">💃 Coreografías</option>
+            <option value="Fotografía">📸 Fotografía / Video</option>
+            <option value="Flores">💐 Flores / Bouquet</option>
+            <option value="Transporte">🚗 Transporte / Limousine</option>
+            <option value="Recuerdos">🎁 Recuerdos</option>
+            <option value="Misa">⛪ Misa / Iglesia</option>
+            <option value="Brindis">🥂 Brindis</option>
+            <option value="Chambelanes">🕺 Chambelanes</option>
+            <option value="Último Juguete">🧸 Último Juguete</option>
+            <option value="Tiara">👑 Tiara / Corona</option>
+            <option value="Zapatillas">👠 Zapatillas</option>
+            <option value="Anillo">💍 Anillo</option>
+            <option value="Biblia">📖 Biblia / Misal</option>
+            <option value="Cojín">💜 Cojín</option>
+            <option value="Ramo">💐 Ramo</option>
+            <option value="Otro">✨ Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label whatsapp-label"><svg class="wa-icon" viewBox="0 0 24 24" fill="#25D366" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</label>
+          <input type="tel" id="padrinoPhone" class="form-input" placeholder="Ej: 5512345678" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Monto comprometido ($)</label>
+          <input type="number" id="padrinoAmount" class="form-input" placeholder="0.00" min="0" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Monto entregado ($)</label>
+          <input type="number" id="padrinoPaid" class="form-input" placeholder="0.00" min="0" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <select id="padrinoStatus" class="form-input">
+            <option value="confirmed">✅ Confirmado</option>
+            <option value="pending">⏳ Por confirmar</option>
+            <option value="declined">❌ Declinó</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notas</label>
+          <textarea id="padrinoNotes" class="form-input form-textarea" placeholder="Detalles, acuerdos..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modalPadrino')">Cancelar</button>
+        <button class="btn-save" onclick="savePadrino()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PADRINO DETAIL MODAL -->
+  <div id="modalPadrinoDetail" class="modal-overlay" onclick="closeModal('modalPadrinoDetail')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title" id="padrinoDetailTitle">Detalle del Padrino</h3>
+        <button class="modal-close" onclick="closeModal('modalPadrinoDetail')">✕</button>
+      </div>
+      <div class="modal-body" id="padrinoDetailBody"></div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modalPadrinoDetail')">Cerrar</button>
+        <button class="btn-save" id="padrinoDetailEditBtn">✏️ Editar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="modalSettings" class="modal-overlay" onclick="closeModal('modalSettings')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">⚙️ Configuración</h3>
+        <button class="modal-close" onclick="closeModal('modalSettings')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nombre de la Festejada</label>
+          <input type="text" id="settingName" class="form-input" placeholder="Ej: Sofía García" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha del evento</label>
+          <input type="date" id="settingDate" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Presupuesto Total ($)</label>
+          <input type="number" id="settingBudget" class="form-input" placeholder="0.00" min="0" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modalSettings')">Cancelar</button>
+        <button class="btn-save" onclick="saveSettings()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROVIDER MODAL -->
+  <div id="modalProvider" class="modal-overlay" onclick="closeModal('modalProvider')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title" id="providerModalTitle">🎪 Nuevo Proveedor</h3>
+        <button class="modal-close" onclick="closeModal('modalProvider')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="providerId" />
+        <div class="form-group">
+          <label class="form-label">Nombre del proveedor *</label>
+          <input type="text" id="providerName" class="form-input" placeholder="Ej: Salón Los Portales" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Asesor asignado</label>
+          <div class="input-with-icon">
+            <span class="input-icon-left">👤</span>
+            <input type="text" id="providerEmployee" class="form-input form-input-iconed" placeholder="Ej: Laura Méndez" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoría *</label>
+          <select id="providerCategory" class="form-input" onchange="togglePhotoDateField()">
+            <option value="">-- Seleccionar --</option>
+            <option value="Salón">🏛️ Salón / Venue</option>
+            <option value="Catering">🍽️ Catering / Banquetes</option>
+            <option value="Misa">⛪ Misa / Iglesia</option>
+            <option value="Música">🎵 Música / DJ / Banda</option>
+            <option value="Coreografías">💃 Coreografías</option>
+            <option value="Fotografía">📸 Fotografía</option>
+            <option value="Video">🎬 Videografía</option>
+            <option value="Decoración">🌸 Decoración</option>
+            <option value="Pastel">🎂 Pastel</option>
+            <option value="Flores">💐 Flores / Bouquet</option>
+            <option value="Vestido">👗 Vestido</option>
+            <option value="Maquillaje">💄 Maquillaje / Peinado</option>
+            <option value="Invitaciones">📬 Invitaciones</option>
+            <option value="Transporte">🚗 Transporte / Limousine</option>
+            <option value="Show">🎭 Show / Entretenimiento</option>
+            <option value="Recuerdos">🎁 Recuerdos / Souvenirs</option>
+            <option value="Vino">🍷 Vino</option>
+            <option value="Cocktelería">🍹 Cocktelería</option>
+            <option value="Mesa de Dulces">🍬 Mesa de Dulces</option>
+            <option value="Cabina Fotográfica">📷 Cabina Fotográfica</option>
+            <option value="Otro">✨ Otro</option>
+          </select>
+        </div>
+        <div class="form-group" id="photoSessionGroup" style="display:none">
+          <label class="form-label">📸 Fecha de sesión fotográfica</label>
+          <input type="date" id="providerPhotoDate" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label whatsapp-label"><svg class="wa-icon" viewBox="0 0 24 24" fill="#25D366" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</label>
+          <input type="tel" id="providerPhone" class="form-input" placeholder="Ej: 5512345678" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Importe total del servicio ($) *</label>
+          <input type="number" id="providerTotal" class="form-input" placeholder="0.00" min="0" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Anticipo / Enganche pagado ($)</label>
+          <input type="number" id="providerDeposit" class="form-input" placeholder="0.00" min="0" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha próximo pago</label>
+          <input type="date" id="providerNextPayDate" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Monto próximo pago ($)</label>
+          <input type="number" id="providerNextPayAmount" class="form-input" placeholder="0.00" min="0" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <select id="providerStatus" class="form-input">
+            <option value="contracted">✅ Contratado</option>
+            <option value="negotiating">🤝 En negociación</option>
+            <option value="pending">⏳ Pendiente de contratar</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notas</label>
+          <textarea id="providerNotes" class="form-input form-textarea" placeholder="Detalles, condiciones, acuerdos..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modalProvider')">Cancelar</button>
+        <button class="btn-save" onclick="saveProvider()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT MODAL -->
+  <div id="modalPayment" class="modal-overlay" onclick="closeModal('modalPayment')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">💳 Registrar Pago</h3>
+        <button class="modal-close" onclick="closeModal('modalPayment')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Proveedor *</label>
+          <select id="paymentProvider" class="form-input">
+            <option value="">-- Seleccionar proveedor --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Monto pagado ($) *</label>
+          <input type="number" id="paymentAmount" class="form-input" placeholder="0.00" min="0" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de pago *</label>
+          <input type="date" id="paymentDate" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Método de pago</label>
+          <select id="paymentMethod" class="form-input">
+            <option value="Efectivo">💵 Efectivo</option>
+            <option value="Transferencia">🏦 Transferencia</option>
+            <option value="Tarjeta">💳 Tarjeta</option>
+            <option value="Depósito">🧾 Depósito bancario</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Concepto / Nota</label>
+          <input type="text" id="paymentNote" class="form-input" placeholder="Ej: Anticipo, Segunda mensualidad..." />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Próximo pago: fecha</label>
+          <input type="date" id="paymentNextDate" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Próximo pago: monto ($)</label>
+          <input type="number" id="paymentNextAmount" class="form-input" placeholder="0.00" min="0" step="0.01" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modalPayment')">Cancelar</button>
+        <button class="btn-save" onclick="savePayment()">Registrar Pago</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENDING SERVICE MODAL -->
+  <div id="modalPending" class="modal-overlay" onclick="closeModal('modalPending')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">📋 Servicio Pendiente</h3>
+        <button class="modal-close" onclick="closeModal('modalPending')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="pendingId" />
+        <div class="form-group">
+          <label class="form-label">Servicio / Producto *</label>
+          <input type="text" id="pendingServiceName" class="form-input" placeholder="Ej: DJ para la recepción" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoría</label>
+          <select id="pendingCategory" class="form-input">
+            <option value="">-- Seleccionar --</option>
+            <option value="Salón">🏛️ Salón / Venue</option>
+            <option value="Catering">🍽️ Catering / Banquetes</option>
+            <option value="Misa">⛪ Misa / Iglesia</option>
+            <option value="Música">🎵 Música / DJ / Banda</option>
+            <option value="Coreografías">💃 Coreografías</option>
+            <option value="Fotografía">📸 Fotografía</option>
+            <option value="Video">🎬 Videografía</option>
+            <option value="Decoración">🌸 Decoración</option>
+            <option value="Pastel">🎂 Pastel</option>
+            <option value="Flores">💐 Flores / Bouquet</option>
+            <option value="Vestido">👗 Vestido</option>
+            <option value="Maquillaje">💄 Maquillaje / Peinado</option>
+            <option value="Invitaciones">📬 Invitaciones</option>
+            <option value="Transporte">🚗 Transporte / Limousine</option>
+            <option value="Show">🎭 Show / Entretenimiento</option>
+            <option value="Recuerdos">🎁 Recuerdos / Souvenirs</option>
+            <option value="Vino">🍷 Vino</option>
+            <option value="Cocktelería">🍹 Cocktelería</option>
+            <option value="Mesa de Dulces">🍬 Mesa de Dulces</option>
+            <option value="Cabina Fotográfica">📷 Cabina Fotográfica</option>
+            <option value="Otro">✨ Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Presupuesto estimado ($)</label>
+          <input type="number" id="pendingBudget" class="form-input" placeholder="0.00" min="0" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Prioridad</label>
+          <select id="pendingPriority" class="form-input">
+            <option value="high">🔴 Alta — Indispensable</option>
+            <option value="medium">🟡 Media — Importante</option>
+            <option value="low">🟢 Baja — Opcional</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha límite para contratar</label>
+          <input type="date" id="pendingDeadline" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notas / Requisitos</label>
+          <textarea id="pendingNotes" class="form-input form-textarea" placeholder="Detalles que necesitas en este servicio..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modalPending')">Cancelar</button>
+        <button class="btn-save" onclick="savePending()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROVIDER DETAIL MODAL -->
+  <div id="modalProviderDetail" class="modal-overlay" onclick="closeModal('modalProviderDetail')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title" id="detailTitle">Detalle del Proveedor</h3>
+        <button class="modal-close" onclick="closeModal('modalProviderDetail')">✕</button>
+      </div>
+      <div class="modal-body" id="detailBody"></div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modalProviderDetail')">Cerrar</button>
+        <button class="btn-save" id="detailEditBtn">✏️ Editar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM DELETE -->
+  <div id="modalConfirm" class="modal-overlay" onclick="closeModal('modalConfirm')">
+    <div class="modal-box modal-small" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">⚠️ Confirmar</h3>
+        <button class="modal-close" onclick="closeModal('modalConfirm')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMsg" style="text-align:center;font-size:1rem;margin-bottom:0">¿Seguro que deseas eliminar este elemento?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modalConfirm')">Cancelar</button>
+        <button class="btn-delete" id="confirmDeleteBtn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOODBOARD IDEA MODAL -->
+  <div id="modalMoodIdea" class="modal-overlay" onclick="closeModal('modalMoodIdea')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title" id="moodIdeaModalTitle">💡 Nueva Idea</h3>
+        <button class="modal-close" onclick="closeModal('modalMoodIdea')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="moodIdeaId" />
+        <div class="form-group">
+          <label class="form-label">Categoría *</label>
+          <select id="moodIdeaCategory" class="form-input">
+            <option value="">-- Seleccionar --</option>
+            <option value="Vestido">👗 Vestido</option>
+            <option value="Peinado">💇 Peinado</option>
+            <option value="Maquillaje">💄 Maquillaje</option>
+            <option value="Decoración">🌸 Decoración</option>
+            <option value="Mesa Principal">🍽️ Mesa Principal</option>
+            <option value="Pastel">🎂 Pastel</option>
+            <option value="Invitaciones">📬 Invitaciones</option>
+            <option value="Foto">📸 Sesión de Fotos</option>
+            <option value="Poses">🤳 Poses</option>
+            <option value="Vals">💃 Vals / Coreografía</option>
+            <option value="Color">🎨 Paleta de Colores</option>
+            <option value="Flores">💐 Flores / Bouquet</option>
+            <option value="Accesorios">👑 Accesorios / Tiara</option>
+            <option value="Iluminación">💡 Iluminación</option>
+            <option value="Otro">✨ Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Título de la idea *</label>
+          <input type="text" id="moodIdeaTitle" class="form-input" placeholder="Ej: Vestido rosa pastel con pedrería" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea id="moodIdeaDesc" class="form-input" rows="3" placeholder="Ej: Corte princesa, tono rosa pastel, con pedrería en el corset..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags (separados por coma)</label>
+          <input type="text" id="moodIdeaTags" class="form-input" placeholder="Ej: rosa pastel, pedrería, princesa" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">🖼️ Imagen (Sube, pega link o captura)</label>
+          <div style="display:flex; gap:0.5rem; margin-bottom:0.4rem;">
+            <button type="button" class="btn-cancel" style="padding:0.4rem 0.6rem; flex:1;" onclick="document.getElementById('moodIdeaFileInput').click()">
+              📁 Subir Foto
+            </button>
+            <input type="file" id="moodIdeaFileInput" accept="image/*" style="display:none" onchange="handleMoodImageFile(event)" />
+          </div>
+          <input type="url" id="moodIdeaImage" class="form-input" placeholder="O pega la URL o haz Ctrl+V de una captura" />
+          <small style="color:var(--text-muted);font-size:.72rem">El tamaño se reducirá automáticamente para ahorrar espacio.</small>
+        </div>
+        <div class="form-group" id="moodImagePreview" style="display:none; position:relative;">
+          <button type="button" class="btn-icon danger" style="position:absolute; top:5px; right:5px; background:rgba(255,255,255,0.8)" onclick="clearMoodImagePreview()" title="Quitar imagen">🗑️</button>
+          <img id="moodPreviewImg" class="mood-preview-img" alt="Preview" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modalMoodIdea')">Cancelar</button>
+        <button class="btn-save" onclick="saveMoodIdea()">💾 Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING WHATSAPP BUTTON -->
+  <a id="floatingWA" class="floating-wa hidden" href="#" target="_blank" title="Mi WhatsApp">
+    <svg viewBox="0 0 24 24" fill="#fff" width="28" height="28"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
